@@ -24,15 +24,18 @@ public class ConsoleMenu {
             showMenu();
             option = readInteger("Escolha uma opcao: ");
             handleOption(option);
-        } while (option != 4);
+        } while (option != 6);
     }
 
     private void showMenu() {
         System.out.println();
+        System.out.println("===== Sistema Academico =====");
         System.out.println("1 - Cadastrar turma");
         System.out.println("2 - Cadastrar avaliacao");
         System.out.println("3 - Listar turmas");
-        System.out.println("4 - Sair");
+        System.out.println("4 - Gerar relatorio de avaliacoes por turma");
+        System.out.println("5 - Gerar relatorio de peso das avaliacoes");
+        System.out.println("6 - Sair");
     }
 
     private void handleOption(int option) {
@@ -41,7 +44,9 @@ public class ConsoleMenu {
                 case 1 -> registerClass();
                 case 2 -> registerAssessment();
                 case 3 -> listClasses();
-                case 4 -> System.out.println("Programa encerrado.");
+                case 4 -> printClassAssessmentSummaryReport();
+                case 5 -> printAssessmentWeightReport();
+                case 6 -> System.out.println("Programa encerrado.");
                 default -> System.out.println("Opcao invalida.");
             }
         } catch (AcademicSystemException exception) {
@@ -84,9 +89,29 @@ public class ConsoleMenu {
             }
 
             for (Assessment assessment : academicClass.getAssessments()) {
-                System.out.println("  - " + assessment);
+                System.out.println("  - Tipo: " + formatAssessmentType(assessment)
+                        + " | Valor: " + assessment.getValue()
+                        + " | Peso: " + assessment.getWeight());
             }
         }
+    }
+
+    private String formatAssessmentType(Assessment assessment) {
+        return switch (assessment.getType()) {
+            case "Exam" -> "Exame";
+            case "Practical Assignment" -> "Atividade pratica";
+            case "Seminar" -> "Seminario";
+            case "Assignment" -> "Trabalho";
+            default -> assessment.getType();
+        };
+    }
+
+    private void printClassAssessmentSummaryReport() {
+        System.out.println(controller.generateClassAssessmentSummaryReport());
+    }
+
+    private void printAssessmentWeightReport() {
+        System.out.println(controller.generateAssessmentWeightReport());
     }
 
     private String readText(String prompt) {
