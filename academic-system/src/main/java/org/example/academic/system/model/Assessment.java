@@ -8,11 +8,11 @@ public abstract class Assessment {
 
     protected Assessment(double value, double weight) {
         if (value < 0) {
-            throw new AcademicSystemException("Assessment value cannot be negative.");
+            throw new AcademicSystemException("O valor da avaliacao nao pode ser negativo.");
         }
 
         if (weight <= 0) {
-            throw new AcademicSystemException("Assessment weight must be greater than zero.");
+            throw new AcademicSystemException("O peso da avaliacao deve ser maior que zero.");
         }
 
         this.value = value;
@@ -31,6 +31,6 @@ public abstract class Assessment {
 
     @Override
     public String toString() {
-        return getType() + " - value: " + value + ", weight: " + weight;
+        return getType() + " - valor: " + value + ", peso: " + weight;
     }
 }

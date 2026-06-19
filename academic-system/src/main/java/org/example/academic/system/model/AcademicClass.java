@@ -13,11 +13,11 @@ public class AcademicClass {
 
     public AcademicClass(String code, String title) {
         if (isBlank(code)) {
-            throw new AcademicSystemException("Class code cannot be empty.");
+            throw new AcademicSystemException("O codigo da turma nao pode estar vazio.");
         }
 
         if (isBlank(title)) {
-            throw new AcademicSystemException("Class title cannot be empty.");
+            throw new AcademicSystemException("O titulo da turma nao pode estar vazio.");
         }
 
         this.code = code.trim();
@@ -35,7 +35,7 @@ public class AcademicClass {
 
     public void addAssessment(Assessment assessment) {
         if (assessment == null) {
-            throw new AcademicSystemException("Assessment cannot be null.");
+            throw new AcademicSystemException("A avaliacao nao pode ser nula.");
         }
 
         assessments.add(assessment);

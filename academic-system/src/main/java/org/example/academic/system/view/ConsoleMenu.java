@@ -2,9 +2,13 @@ package org.example.academic.system.view;
 
 import org.example.academic.system.controller.AcademicSystemController;
 import org.example.academic.system.exception.AcademicSystemException;
+import org.example.academic.system.exception.AuthenticationException;
+import org.example.academic.system.exception.AuthorizationException;
 import org.example.academic.system.model.AcademicClass;
 import org.example.academic.system.model.Assessment;
 import org.example.academic.system.model.PersistenceType;
+import org.example.academic.system.model.Role;
+import org.example.academic.system.model.User;
 
 import java.util.List;
 import java.util.Scanner;
@@ -19,42 +23,129 @@ public class ConsoleMenu {
     }
 
     public void start() {
+        boolean running = true;
+
+        while (running) {
+            User user = login();
+
+            if (user.getRole() == Role.ADMIN) {
+                running = showAdminMenu();
+            } else if (user.getRole() == Role.PROFESSOR) {
+                running = showProfessorMenu();
+            }
+        }
+    }
+
+    private User login() {
+        while (true) {
+            System.out.println();
+            System.out.println("===== Sistema Academico =====");
+            System.out.println();
+            String username = readText("Usuario: ");
+            String password = readText("Senha: ");
+
+            try {
+                User user = controller.login(username, password);
+                System.out.println("Login realizado com sucesso.");
+                System.out.println("Bem-vindo, " + user.getUsername() + "!");
+                return user;
+            } catch (AuthenticationException exception) {
+                System.out.println("Usuario ou senha invalidos.");
+            }
+        }
+    }
+
+    private boolean showAdminMenu() {
         int option;
 
         do {
-            showMenu();
+            printAdminMenu();
             option = readInteger("Escolha uma opcao: ");
-            handleOption(option);
-        } while (option != 7);
+
+            switch (option) {
+                case 1 -> execute(this::registerClass);
+                case 2 -> execute(this::registerAssessment);
+                case 3 -> execute(this::listClasses);
+                case 4 -> execute(this::printClassAssessmentSummaryReport);
+                case 5 -> execute(this::printAssessmentWeightReport);
+                case 6 -> execute(this::configurePersistenceType);
+                case 7 -> execute(this::saveAcademicData);
+                case 8 -> execute(this::printPersistenceConfigurationReport);
+                case 9 -> {
+                    controller.logout();
+                    System.out.println("Logout realizado com sucesso.");
+                    return true;
+                }
+                case 0 -> {
+                    System.out.println("Programa encerrado.");
+                    return false;
+                }
+                default -> System.out.println("Opcao invalida.");
+            }
+        } while (true);
     }
 
-    private void showMenu() {
+    private boolean showProfessorMenu() {
+        int option;
+
+        do {
+            printProfessorMenu();
+            option = readInteger("Escolha uma opcao: ");
+
+            switch (option) {
+                case 1 -> execute(this::registerAssessment);
+                case 2 -> execute(this::listClasses);
+                case 3 -> execute(this::printClassAssessmentSummaryReport);
+                case 4 -> execute(this::printAssessmentWeightReport);
+                case 5 -> {
+                    controller.logout();
+                    System.out.println("Logout realizado com sucesso.");
+                    return true;
+                }
+                case 0 -> {
+                    System.out.println("Programa encerrado.");
+                    return false;
+                }
+                default -> System.out.println("Opcao invalida.");
+            }
+        } while (true);
+    }
+
+    private void printAdminMenu() {
         System.out.println();
-        System.out.println("===== Sistema Academico =====");
+        System.out.println("===== Sistema Academico - ADMIN =====");
+        System.out.println();
         System.out.println("1 - Cadastrar turma");
         System.out.println("2 - Cadastrar avaliacao");
         System.out.println("3 - Listar turmas");
         System.out.println("4 - Gerar relatorio de avaliacoes por turma");
         System.out.println("5 - Gerar relatorio de peso das avaliacoes");
         System.out.println("6 - Configurar tipo de persistencia");
-        System.out.println("7 - Sair");
-        System.out.println("Persistencia atual: " + controller.getCurrentPersistenceFormat());
+        System.out.println("7 - Salvar dados academicos");
+        System.out.println("8 - Gerar relatorio de configuracao de persistencia");
+        System.out.println("9 - Logout");
+        System.out.println("0 - Sair");
     }
 
-    private void handleOption(int option) {
+    private void printProfessorMenu() {
+        System.out.println();
+        System.out.println("===== Sistema Academico - PROFESSOR =====");
+        System.out.println();
+        System.out.println("1 - Cadastrar avaliacao");
+        System.out.println("2 - Listar turmas");
+        System.out.println("3 - Gerar relatorio de avaliacoes por turma");
+        System.out.println("4 - Gerar relatorio de peso das avaliacoes");
+        System.out.println("5 - Logout");
+        System.out.println("0 - Sair");
+    }
+
+    private void execute(MenuAction action) {
         try {
-            switch (option) {
-                case 1 -> registerClass();
-                case 2 -> registerAssessment();
-                case 3 -> listClasses();
-                case 4 -> printClassAssessmentSummaryReport();
-                case 5 -> printAssessmentWeightReport();
-                case 6 -> configurePersistenceType();
-                case 7 -> System.out.println("Programa encerrado.");
-                default -> System.out.println("Opcao invalida.");
-            }
+            action.run();
         } catch (AcademicSystemException exception) {
             System.out.println("Erro: " + exception.getMessage());
+        } catch (AuthorizationException exception) {
+            System.out.println("Acesso negado.");
         }
     }
 
@@ -118,6 +209,15 @@ public class ConsoleMenu {
         System.out.println(controller.generateAssessmentWeightReport());
     }
 
+    private void saveAcademicData() {
+        controller.saveAcademicData();
+        System.out.println("Dados academicos salvos com sucesso.");
+    }
+
+    private void printPersistenceConfigurationReport() {
+        System.out.println(controller.generatePersistenceConfigurationReport());
+    }
+
     private void configurePersistenceType() {
         System.out.println("Tipo de persistencia:");
         System.out.println("1 - TXT");
@@ -130,20 +230,20 @@ public class ConsoleMenu {
             switch (option) {
                 case 1 -> {
                     controller.configurePersistence(PersistenceType.TXT);
-                    System.out.println("Persistencia configurada para TXT.");
-                    System.out.println("Dados carregados: " + controller.listClasses().size() + " turma(s).");
+                    System.out.println("Persistencia configurada como TXT.");
+                    System.out.println("Turmas carregadas: " + controller.listClasses().size());
                     return;
                 }
                 case 2 -> {
                     controller.configurePersistence(PersistenceType.JSON);
-                    System.out.println("Persistencia configurada para JSON.");
-                    System.out.println("Dados carregados: " + controller.listClasses().size() + " turma(s).");
+                    System.out.println("Persistencia configurada como JSON.");
+                    System.out.println("Turmas carregadas: " + controller.listClasses().size());
                     return;
                 }
                 case 3 -> {
                     controller.configurePersistence(PersistenceType.XML);
-                    System.out.println("Persistencia configurada para XML.");
-                    System.out.println("Dados carregados: " + controller.listClasses().size() + " turma(s).");
+                    System.out.println("Persistencia configurada como XML.");
+                    System.out.println("Turmas carregadas: " + controller.listClasses().size());
                     return;
                 }
                 default -> System.out.println("Tipo de persistencia invalido.");
@@ -205,5 +305,9 @@ public class ConsoleMenu {
                 System.out.println("Numero invalido. Tente novamente.");
             }
         }
+    }
+
+    private interface MenuAction {
+        void run();
     }
 }

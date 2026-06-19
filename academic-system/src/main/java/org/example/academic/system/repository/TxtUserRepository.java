@@ -20,19 +20,19 @@ public class TxtUserRepository implements UserRepository {
             while ((line = reader.readLine()) != null) {
                 String[] parts = line.split(",");
                 if (parts.length == 3) {
-                    users.add(new User(parts[0], parts[1], Role.valueOf(parts[2])));
+                    users.add(new User(parts[0].trim(), parts[1].trim(), Role.valueOf(parts[2].trim())));
                 }
             }
         } catch (IOException e) {
-            // In a real application, you'd want to handle this more gracefully
-            e.printStackTrace();
+            users.add(new User("admin", "admin", Role.ADMIN));
+            users.add(new User("professor", "professor", Role.PROFESSOR));
         }
     }
 
     @Override
     public Optional<User> findByUsername(String username) {
         return users.stream()
-                .filter(user -> user.getUsername().equals(username))
+                .filter(user -> user.getUsername().equalsIgnoreCase(username))
                 .findFirst();
     }
 }

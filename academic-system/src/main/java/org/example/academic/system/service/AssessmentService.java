@@ -18,7 +18,7 @@ public class AssessmentService {
 
     public void registerAssessment(String classCode, String assessmentType, double value, double weight) {
         AcademicClass academicClass = academicSystem.findClassByCode(classCode)
-                .orElseThrow(() -> new AcademicSystemException("Class not found."));
+                .orElseThrow(() -> new AcademicSystemException("Turma nao encontrada."));
 
         Assessment assessment = createAssessment(assessmentType, value, weight);
         academicClass.addAssessment(assessment);
@@ -26,7 +26,7 @@ public class AssessmentService {
 
     private Assessment createAssessment(String assessmentType, double value, double weight) {
         if (assessmentType == null) {
-            throw new AcademicSystemException("Assessment type cannot be empty.");
+            throw new AcademicSystemException("O tipo da avaliacao nao pode estar vazio.");
         }
 
         return switch (assessmentType.trim().toLowerCase()) {
@@ -34,7 +34,7 @@ public class AssessmentService {
             case "practical", "practical assignment" -> new PracticalAssignment(value, weight);
             case "seminar" -> new Seminar(value, weight);
             case "assignment" -> new Assignment(value, weight);
-            default -> throw new AcademicSystemException("Invalid assessment type.");
+            default -> throw new AcademicSystemException("Tipo de avaliacao invalido.");
         };
     }
 }

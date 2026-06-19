@@ -15,7 +15,7 @@ public class ClassService {
         AcademicClass academicClass = new AcademicClass(code, title);
 
         if (academicSystem.findClassByCode(academicClass.getCode()).isPresent()) {
-            throw new AcademicSystemException("A class with this code already exists.");
+            throw new AcademicSystemException("Ja existe uma turma com este codigo.");
         }
 
         academicSystem.addClass(academicClass);

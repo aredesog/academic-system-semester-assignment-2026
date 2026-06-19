@@ -14,7 +14,6 @@ public class PersistenceService {
 
     // Guarda a estratégia de persistência configurada atualmente
     private PersistenceStrategy currentStrategy;
-    private PersistenceType currentType;
 
     public PersistenceService() {
         configurePersistenceType(loadConfiguredPersistenceType(), false);
@@ -47,8 +46,6 @@ public class PersistenceService {
                 // Should never happen because all enum values are handled
                 throw new IllegalArgumentException("Tipo de persistência inválido: " + type);
         }
-
-        this.currentType = type;
 
         if (saveConfiguration) {
             saveConfiguredPersistenceType(type);
@@ -83,6 +80,11 @@ public class PersistenceService {
      */
     public String getCurrentFormatName() {
         return currentStrategy != null ? currentStrategy.getFormatName() : "NENHUM";
+    }
+
+    public String generateConfigurationReport() {
+        return "===== Relatorio de Configuracao de Persistencia =====" + System.lineSeparator()
+                + "Tipo de persistencia ativo: " + getCurrentFormatName();
     }
 
     private PersistenceType loadConfiguredPersistenceType() {
