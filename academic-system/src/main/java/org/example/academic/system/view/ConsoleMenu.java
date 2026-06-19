@@ -4,6 +4,7 @@ import org.example.academic.system.controller.AcademicSystemController;
 import org.example.academic.system.exception.AcademicSystemException;
 import org.example.academic.system.model.AcademicClass;
 import org.example.academic.system.model.Assessment;
+import org.example.academic.system.model.PersistenceType;
 
 import java.util.List;
 import java.util.Scanner;
@@ -24,7 +25,7 @@ public class ConsoleMenu {
             showMenu();
             option = readInteger("Escolha uma opcao: ");
             handleOption(option);
-        } while (option != 6);
+        } while (option != 7);
     }
 
     private void showMenu() {
@@ -35,7 +36,9 @@ public class ConsoleMenu {
         System.out.println("3 - Listar turmas");
         System.out.println("4 - Gerar relatorio de avaliacoes por turma");
         System.out.println("5 - Gerar relatorio de peso das avaliacoes");
-        System.out.println("6 - Sair");
+        System.out.println("6 - Configurar tipo de persistencia");
+        System.out.println("7 - Sair");
+        System.out.println("Persistencia atual: " + controller.getCurrentPersistenceFormat());
     }
 
     private void handleOption(int option) {
@@ -46,7 +49,8 @@ public class ConsoleMenu {
                 case 3 -> listClasses();
                 case 4 -> printClassAssessmentSummaryReport();
                 case 5 -> printAssessmentWeightReport();
-                case 6 -> System.out.println("Programa encerrado.");
+                case 6 -> configurePersistenceType();
+                case 7 -> System.out.println("Programa encerrado.");
                 default -> System.out.println("Opcao invalida.");
             }
         } catch (AcademicSystemException exception) {
@@ -112,6 +116,39 @@ public class ConsoleMenu {
 
     private void printAssessmentWeightReport() {
         System.out.println(controller.generateAssessmentWeightReport());
+    }
+
+    private void configurePersistenceType() {
+        System.out.println("Tipo de persistencia:");
+        System.out.println("1 - TXT");
+        System.out.println("2 - JSON");
+        System.out.println("3 - XML");
+
+        while (true) {
+            int option = readInteger("Escolha o tipo de persistencia: ");
+
+            switch (option) {
+                case 1 -> {
+                    controller.configurePersistence(PersistenceType.TXT);
+                    System.out.println("Persistencia configurada para TXT.");
+                    System.out.println("Dados carregados: " + controller.listClasses().size() + " turma(s).");
+                    return;
+                }
+                case 2 -> {
+                    controller.configurePersistence(PersistenceType.JSON);
+                    System.out.println("Persistencia configurada para JSON.");
+                    System.out.println("Dados carregados: " + controller.listClasses().size() + " turma(s).");
+                    return;
+                }
+                case 3 -> {
+                    controller.configurePersistence(PersistenceType.XML);
+                    System.out.println("Persistencia configurada para XML.");
+                    System.out.println("Dados carregados: " + controller.listClasses().size() + " turma(s).");
+                    return;
+                }
+                default -> System.out.println("Tipo de persistencia invalido.");
+            }
+        }
     }
 
     private String readText(String prompt) {

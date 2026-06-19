@@ -31,7 +31,7 @@ public class AssessmentService {
 
         return switch (assessmentType.trim().toLowerCase()) {
             case "exam" -> new Exam(value, weight);
-            case "practical" -> new PracticalAssignment(value, weight);
+            case "practical", "practical assignment" -> new PracticalAssignment(value, weight);
             case "seminar" -> new Seminar(value, weight);
             case "assignment" -> new Assignment(value, weight);
             default -> throw new AcademicSystemException("Invalid assessment type.");
