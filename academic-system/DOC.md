@@ -44,21 +44,15 @@
 | ID       | User Story                                             | Status |
 |----------|--------------------------------------------------------|--------|
 | US-0000  | Start academic system                                  | ✅      |
-| TUS-     | Refactor domain model using Lombok                     |        |
-| TUS-2370 | Refactor menu operations into AcademicSystemController |        |
-| TUS-2382 | Define equality for identifiable domain objects        |        |
-| TUS-2396 | Introduce ClassService                                 |        |
-| TUS-2397 | Introduce AssessmentService                            |        |
-| TUS-2398 | Introduce PersistenceService                           |        |
-| TUS-2399 | Introduce ReportService                                |        |
-| TUS-2400 | Simplify AcademicSystemController                      |        |
-| TUS-2414 | Introduce AuthenticationController for JavaFX login    |        |
-
-### Docker and Deployment
-
-| ID       | User Story                          | Status |
-|----------|-------------------------------------|--------|
-| TUS-2381 | Deliver academic system with Docker |        |
+| TUS-     | Refactor domain model using Lombok                     | ❌      |
+| TUS-2370 | Refactor menu operations into AcademicSystemController | ✅      |
+| TUS-2382 | Define equality for identifiable domain objects        | ✅      |
+| TUS-2396 | Introduce ClassService                                 | ✅      |
+| TUS-2397 | Introduce AssessmentService                            | ✅      |
+| TUS-2398 | Introduce PersistenceService                           | ✅      |
+| TUS-2399 | Introduce ReportService                                | ✅      |
+| TUS-2400 | Simplify AcademicSystemController                      | ✅      |
+| TUS-2414 | Introduce AuthenticationController for JavaFX login    | ✅      |
 
 ### Testing Infrastructure and Automated Tests
 
@@ -111,3 +105,9 @@
 | TUS-2418 | Configure pull request validation workflow    |        |
 | TUS-2419 | Configure release workflow                    |        |
 | TUS-2420 | Configure branch protection for pull requests |        |
+
+### Docker and Deployment
+
+| ID       | User Story                          | Status |
+|----------|-------------------------------------|--------|
+| TUS-2381 | Deliver academic system with Docker |        |

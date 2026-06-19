@@ -1,6 +1,7 @@
 package org.example.academic.system.view;
 
 import org.example.academic.system.controller.AcademicSystemController;
+import org.example.academic.system.controller.AuthenticationController;
 import org.example.academic.system.exception.AcademicSystemException;
 import org.example.academic.system.exception.AuthenticationException;
 import org.example.academic.system.exception.AuthorizationException;
@@ -16,10 +17,12 @@ import java.util.Scanner;
 
 public class ConsoleMenu {
     private final AcademicSystemController controller;
+    private final AuthenticationController authenticationController;
     private final Scanner scanner;
 
-    public ConsoleMenu(AcademicSystemController controller) {
+    public ConsoleMenu(AcademicSystemController controller, AuthenticationController authenticationController) {
         this.controller = controller;
+        this.authenticationController = authenticationController;
         this.scanner = new Scanner(System.in);
     }
 
@@ -46,7 +49,7 @@ public class ConsoleMenu {
             String password = readText("Senha: ");
 
             try {
-                User user = controller.login(username, password);
+                User user = authenticationController.login(username, password);
                 System.out.println("Login realizado com sucesso.");
                 System.out.println("Bem-vindo, " + user.getUsername() + "!");
                 return user;
@@ -74,7 +77,7 @@ public class ConsoleMenu {
                     case 7 -> execute(this::saveAcademicData);
                     case 8 -> execute(this::printPersistenceConfigurationReport);
                     case 9 -> {
-                        controller.logout();
+                        authenticationController.logout();
                         System.out.println("Logout realizado com sucesso.");
                         return true;
                     }
@@ -104,7 +107,7 @@ public class ConsoleMenu {
                     case 3 -> execute(this::printClassAssessmentSummaryReport);
                     case 4 -> execute(this::printAssessmentWeightReport);
                     case 5 -> {
-                        controller.logout();
+                        authenticationController.logout();
                         System.out.println("Logout realizado com sucesso.");
                         return true;
                     }

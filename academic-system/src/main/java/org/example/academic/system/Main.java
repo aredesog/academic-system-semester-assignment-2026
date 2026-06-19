@@ -1,6 +1,7 @@
 package org.example.academic.system;
 
 import org.example.academic.system.controller.AcademicSystemController;
+import org.example.academic.system.controller.AuthenticationController;
 import org.example.academic.system.model.AcademicClass;
 import org.example.academic.system.model.AcademicSystem;
 import org.example.academic.system.repository.TxtUserRepository;
@@ -21,6 +22,7 @@ public class Main {
         ReportService reportService = new ReportService(academicSystem);
         PersistenceService persistenceService = new PersistenceService();
         AuthenticationService authenticationService = new AuthenticationService(new TxtUserRepository());
+        AuthenticationController authenticationController = new AuthenticationController(authenticationService);
         AuthorizationService authorizationService = new AuthorizationService();
 
         // ====================================================================
@@ -41,11 +43,10 @@ public class Main {
                 reportService,
                 academicSystem,
                 persistenceService,
-                authenticationService,
                 authorizationService
         );
 
-        ConsoleMenu menu = new ConsoleMenu(controller);
+        ConsoleMenu menu = new ConsoleMenu(controller, authenticationController);
         menu.start();
     }
 }

@@ -7,6 +7,7 @@ import org.example.academic.system.validation.DomainValidator;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 public class AcademicClass {
     @NotBlank(message = "O codigo da turma nao pode estar vazio.")
@@ -48,5 +49,23 @@ public class AcademicClass {
     @Override
     public String toString() {
         return code + " - " + title;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        }
+
+        if (!(object instanceof AcademicClass that)) {
+            return false;
+        }
+
+        return Objects.equals(code, that.code);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(code);
     }
 }

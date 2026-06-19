@@ -4,10 +4,7 @@ import org.example.academic.system.model.AcademicClass;
 import org.example.academic.system.model.AcademicSystem;
 import org.example.academic.system.model.PersistenceType;
 import org.example.academic.system.model.Role;
-import org.example.academic.system.model.User;
-import org.example.academic.system.security.AuthenticationService;
 import org.example.academic.system.security.AuthorizationService;
-import org.example.academic.system.security.Session;
 import org.example.academic.system.service.AssessmentService;
 import org.example.academic.system.service.ClassService;
 import org.example.academic.system.service.PersistenceService;
@@ -21,9 +18,7 @@ public class AcademicSystemController {
     private final ReportService reportService;
     private final AcademicSystem academicSystem;
     private final PersistenceService persistenceService;
-    private final AuthenticationService authenticationService;
     private final AuthorizationService authorizationService;
-    private final Session session = Session.getInstance();
 
 
     public AcademicSystemController(ClassService classService,
@@ -31,23 +26,13 @@ public class AcademicSystemController {
                                     ReportService reportService,
                                     AcademicSystem academicSystem,
                                     PersistenceService persistenceService,
-                                    AuthenticationService authenticationService,
                                     AuthorizationService authorizationService) {
         this.classService = classService;
         this.assessmentService = assessmentService;
         this.reportService = reportService;
         this.academicSystem = academicSystem;
         this.persistenceService = persistenceService;
-        this.authenticationService = authenticationService;
         this.authorizationService = authorizationService;
-    }
-
-    public User login(String username, String password) {
-        return authenticationService.authenticate(username, password);
-    }
-
-    public void logout() {
-        session.logout();
     }
 
     public void registerClass(String code, String title) {
