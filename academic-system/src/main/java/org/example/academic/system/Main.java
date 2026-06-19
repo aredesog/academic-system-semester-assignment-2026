@@ -49,7 +49,6 @@ public class Main {
                 classService,
                 assessmentService,
                 reportService,
-                academicSystem
                 academicSystem,
                 persistenceService
         );

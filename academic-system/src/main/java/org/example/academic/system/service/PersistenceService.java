@@ -1,38 +1,58 @@
 package org.example.academic.system.service;
 
 import org.example.academic.system.model.AcademicClass;
+import org.example.academic.system.model.PersistenceType;
 import org.example.academic.system.repository.*;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 
 public class PersistenceService {
+    private static final Path CONFIG_FILE = Path.of("persistence_config.txt");
 
     // Guarda a estratégia de persistência configurada atualmente
     private PersistenceStrategy currentStrategy;
+    private PersistenceType currentType;
 
     public PersistenceService() {
-        // Define o formato TXT como padrão inicial do sistema (ou o que preferir)
-        this.currentStrategy = new TxtRepository();
+        configurePersistenceType(loadConfiguredPersistenceType(), false);
     }
 
     /**
      * Altera o tipo de persistência ativo no sistema (US-2372)
-     * Esse método deve ser chamado pelo Controller após validar se o usuário é ADMIN
+     * Esse metodo deve ser chamado pelo Controller após validar se o usuário é ADMIN
      */
-    public void configurePersistenceType(String type) {
-        switch (type.toUpperCase()) {
-            case "TXT":
+    public void configurePersistenceType(PersistenceType type) {
+        configurePersistenceType(type, true);
+    }
+
+    private void configurePersistenceType(PersistenceType type, boolean saveConfiguration) {
+        if (type == null) {
+            throw new IllegalArgumentException("Tipo de persistência não pode ser nulo.");
+        }
+
+        switch (type) {
+            case TXT:
                 this.currentStrategy = new TxtRepository();
                 break;
-            case "JSON":
+            case JSON:
                 this.currentStrategy = new JsonRepository();
                 break;
-            case "XML":
+            case XML:
                 this.currentStrategy = new XmlRepository();
                 break;
             default:
+                // Should never happen because all enum values are handled
                 throw new IllegalArgumentException("Tipo de persistência inválido: " + type);
         }
-        System.out.println("Configuração de persistência alterada para: " + type);
+
+        this.currentType = type;
+
+        if (saveConfiguration) {
+            saveConfiguredPersistenceType(type);
+        }
     }
 
     /**
@@ -63,5 +83,31 @@ public class PersistenceService {
      */
     public String getCurrentFormatName() {
         return currentStrategy != null ? currentStrategy.getFormatName() : "NENHUM";
+    }
+
+    private PersistenceType loadConfiguredPersistenceType() {
+        if (!Files.exists(CONFIG_FILE)) {
+            return PersistenceType.TXT;
+        }
+
+        try {
+            String configuredType = Files.readString(CONFIG_FILE).trim();
+
+            if (configuredType.isEmpty()) {
+                return PersistenceType.TXT;
+            }
+
+            return PersistenceType.valueOf(configuredType.toUpperCase());
+        } catch (IllegalArgumentException | IOException exception) {
+            return PersistenceType.TXT;
+        }
+    }
+
+    private void saveConfiguredPersistenceType(PersistenceType type) {
+        try {
+            Files.writeString(CONFIG_FILE, type.name());
+        } catch (IOException exception) {
+            throw new IllegalStateException("Erro ao salvar a configuracao de persistencia.", exception);
+        }
     }
 }

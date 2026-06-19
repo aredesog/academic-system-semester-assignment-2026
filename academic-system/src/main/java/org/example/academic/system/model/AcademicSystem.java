@@ -16,6 +16,14 @@ public class AcademicSystem {
         classes.add(academicClass);
     }
 
+    public void replaceClasses(List<AcademicClass> loadedClasses) {
+        classes.clear();
+
+        if (loadedClasses != null) {
+            classes.addAll(loadedClasses);
+        }
+    }
+
     public Optional<AcademicClass> findClassByCode(String code) {
         if (code == null) {
             return Optional.empty();

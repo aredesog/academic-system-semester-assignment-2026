@@ -74,8 +74,12 @@ public class TxtRepository implements PersistenceStrategy {
                     // Instancia a classe filha correta com base no tipo guardado
                     if (type.equalsIgnoreCase("exam")) {
                         currentClass.addAssessment(new Exam(value, weight));
-                    } else if (type.equalsIgnoreCase("practical")) {
+                    } else if (type.equalsIgnoreCase("practical") || type.equalsIgnoreCase("Practical Assignment")) {
                         currentClass.addAssessment(new PracticalAssignment(value, weight));
+                    } else if (type.equalsIgnoreCase("assignment")) {
+                        currentClass.addAssessment(new Assignment(value, weight));
+                    } else if (type.equalsIgnoreCase("seminar")) {
+                        currentClass.addAssessment(new Seminar(value, weight));
                     }
                 }
             }
