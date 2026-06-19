@@ -1,0 +1,33 @@
+[ {
+  "code" : "55",
+  "title" : "Troia",
+  "assessments" : [ ]
+}, {
+  "code" : "56",
+  "title" : "six-seven",
+  "assessments" : [ ]
+}, {
+  "code" : "67",
+  "title" : "six-sevens",
+  "assessments" : [ {
+    "value" : 5.0,
+    "weight" : 10.0,
+    "type" : "Exam"
+  }, {
+    "value" : 6.0,
+    "weight" : 10.0,
+    "type" : "Exam"
+  } ]
+}, {
+  "code" : "100",
+  "title" : "Teste",
+  "assessments" : [ ]
+}, {
+  "code" : "69",
+  "title" : "Aredola",
+  "assessments" : [ ]
+}, {
+  "code" : "64",
+  "title" : "Computacao",
+  "assessments" : [ ]
+} ]
