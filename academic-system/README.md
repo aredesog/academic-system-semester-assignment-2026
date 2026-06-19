@@ -25,11 +25,11 @@
 
 | ID                  | User Story                                                            | Status |
 |---------------------|-----------------------------------------------------------------------|--------|
-| US-2366             | Authenticate users and authorize actions based on roles               |        |
-| US-2369             | Handle authentication and authorization errors with custom exceptions |        |
-| US-2378             | Role-based dynamic menu rendering                                     |        |
-| US-2379             | Logout                                                                |        |
-| US-2380             | Display role-specific sequential menus                                |        |
+| US-2366             | Authenticate users and authorize actions based on roles               | ✅      |
+| US-2369             | Handle authentication and authorization errors with custom exceptions | ✅      |
+| US-2378             | Role-based dynamic menu rendering                                     | ✅      |
+| US-2379             | Logout                                                                | ✅      |
+| US-2380             | Display role-specific sequential menus                                | ✅      |
 
 ### Validation and Exception Handling
 

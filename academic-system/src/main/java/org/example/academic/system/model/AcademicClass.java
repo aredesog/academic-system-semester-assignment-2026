@@ -1,28 +1,28 @@
 package org.example.academic.system.model;
 
+import jakarta.validation.constraints.NotBlank;
 import org.example.academic.system.exception.AcademicSystemException;
+import org.example.academic.system.validation.DomainValidator;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 public class AcademicClass {
+    @NotBlank(message = "O codigo da turma nao pode estar vazio.")
     private final String code;
+
+    @NotBlank(message = "O titulo da turma nao pode estar vazio.")
     private final String title;
+
     private final List<Assessment> assessments;
 
     public AcademicClass(String code, String title) {
-        if (isBlank(code)) {
-            throw new AcademicSystemException("O codigo da turma nao pode estar vazio.");
-        }
-
-        if (isBlank(title)) {
-            throw new AcademicSystemException("O titulo da turma nao pode estar vazio.");
-        }
-
-        this.code = code.trim();
-        this.title = title.trim();
+        this.code = code == null ? null : code.trim();
+        this.title = title == null ? null : title.trim();
         this.assessments = new ArrayList<>();
+
+        DomainValidator.validate(this);
     }
 
     public String getCode() {
@@ -48,9 +48,5 @@ public class AcademicClass {
     @Override
     public String toString() {
         return code + " - " + title;
-    }
-
-    private boolean isBlank(String value) {
-        return value == null || value.trim().isEmpty();
     }
 }

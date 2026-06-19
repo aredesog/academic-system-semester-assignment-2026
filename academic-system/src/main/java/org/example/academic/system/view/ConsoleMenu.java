@@ -4,6 +4,7 @@ import org.example.academic.system.controller.AcademicSystemController;
 import org.example.academic.system.exception.AcademicSystemException;
 import org.example.academic.system.exception.AuthenticationException;
 import org.example.academic.system.exception.AuthorizationException;
+import org.example.academic.system.exception.KeyboardInputException;
 import org.example.academic.system.model.AcademicClass;
 import org.example.academic.system.model.Assessment;
 import org.example.academic.system.model.PersistenceType;
@@ -60,27 +61,31 @@ public class ConsoleMenu {
 
         do {
             printAdminMenu();
-            option = readInteger("Escolha uma opcao: ");
+            try {
+                option = readInteger("Escolha uma opcao: ");
 
-            switch (option) {
-                case 1 -> execute(this::registerClass);
-                case 2 -> execute(this::registerAssessment);
-                case 3 -> execute(this::listClasses);
-                case 4 -> execute(this::printClassAssessmentSummaryReport);
-                case 5 -> execute(this::printAssessmentWeightReport);
-                case 6 -> execute(this::configurePersistenceType);
-                case 7 -> execute(this::saveAcademicData);
-                case 8 -> execute(this::printPersistenceConfigurationReport);
-                case 9 -> {
-                    controller.logout();
-                    System.out.println("Logout realizado com sucesso.");
-                    return true;
+                switch (option) {
+                    case 1 -> execute(this::registerClass);
+                    case 2 -> execute(this::registerAssessment);
+                    case 3 -> execute(this::listClasses);
+                    case 4 -> execute(this::printClassAssessmentSummaryReport);
+                    case 5 -> execute(this::printAssessmentWeightReport);
+                    case 6 -> execute(this::configurePersistenceType);
+                    case 7 -> execute(this::saveAcademicData);
+                    case 8 -> execute(this::printPersistenceConfigurationReport);
+                    case 9 -> {
+                        controller.logout();
+                        System.out.println("Logout realizado com sucesso.");
+                        return true;
+                    }
+                    case 0 -> {
+                        System.out.println("Programa encerrado.");
+                        return false;
+                    }
+                    default -> throw new KeyboardInputException("Opcao invalida.");
                 }
-                case 0 -> {
-                    System.out.println("Programa encerrado.");
-                    return false;
-                }
-                default -> System.out.println("Opcao invalida.");
+            } catch (KeyboardInputException exception) {
+                System.out.println("Erro de entrada: " + exception.getMessage());
             }
         } while (true);
     }
@@ -90,23 +95,27 @@ public class ConsoleMenu {
 
         do {
             printProfessorMenu();
-            option = readInteger("Escolha uma opcao: ");
+            try {
+                option = readInteger("Escolha uma opcao: ");
 
-            switch (option) {
-                case 1 -> execute(this::registerAssessment);
-                case 2 -> execute(this::listClasses);
-                case 3 -> execute(this::printClassAssessmentSummaryReport);
-                case 4 -> execute(this::printAssessmentWeightReport);
-                case 5 -> {
-                    controller.logout();
-                    System.out.println("Logout realizado com sucesso.");
-                    return true;
+                switch (option) {
+                    case 1 -> execute(this::registerAssessment);
+                    case 2 -> execute(this::listClasses);
+                    case 3 -> execute(this::printClassAssessmentSummaryReport);
+                    case 4 -> execute(this::printAssessmentWeightReport);
+                    case 5 -> {
+                        controller.logout();
+                        System.out.println("Logout realizado com sucesso.");
+                        return true;
+                    }
+                    case 0 -> {
+                        System.out.println("Programa encerrado.");
+                        return false;
+                    }
+                    default -> throw new KeyboardInputException("Opcao invalida.");
                 }
-                case 0 -> {
-                    System.out.println("Programa encerrado.");
-                    return false;
-                }
-                default -> System.out.println("Opcao invalida.");
+            } catch (KeyboardInputException exception) {
+                System.out.println("Erro de entrada: " + exception.getMessage());
             }
         } while (true);
     }
@@ -146,6 +155,8 @@ public class ConsoleMenu {
             System.out.println("Erro: " + exception.getMessage());
         } catch (AuthorizationException exception) {
             System.out.println("Acesso negado.");
+        } catch (KeyboardInputException exception) {
+            System.out.println("Erro de entrada: " + exception.getMessage());
         }
     }
 
@@ -225,28 +236,32 @@ public class ConsoleMenu {
         System.out.println("3 - XML");
 
         while (true) {
-            int option = readInteger("Escolha o tipo de persistencia: ");
+            try {
+                int option = readInteger("Escolha o tipo de persistencia: ");
 
-            switch (option) {
-                case 1 -> {
-                    controller.configurePersistence(PersistenceType.TXT);
-                    System.out.println("Persistencia configurada como TXT.");
-                    System.out.println("Turmas carregadas: " + controller.listClasses().size());
-                    return;
+                switch (option) {
+                    case 1 -> {
+                        controller.configurePersistence(PersistenceType.TXT);
+                        System.out.println("Persistencia configurada como TXT.");
+                        System.out.println("Turmas carregadas: " + controller.listClasses().size());
+                        return;
+                    }
+                    case 2 -> {
+                        controller.configurePersistence(PersistenceType.JSON);
+                        System.out.println("Persistencia configurada como JSON.");
+                        System.out.println("Turmas carregadas: " + controller.listClasses().size());
+                        return;
+                    }
+                    case 3 -> {
+                        controller.configurePersistence(PersistenceType.XML);
+                        System.out.println("Persistencia configurada como XML.");
+                        System.out.println("Turmas carregadas: " + controller.listClasses().size());
+                        return;
+                    }
+                    default -> throw new KeyboardInputException("Tipo de persistencia invalido.");
                 }
-                case 2 -> {
-                    controller.configurePersistence(PersistenceType.JSON);
-                    System.out.println("Persistencia configurada como JSON.");
-                    System.out.println("Turmas carregadas: " + controller.listClasses().size());
-                    return;
-                }
-                case 3 -> {
-                    controller.configurePersistence(PersistenceType.XML);
-                    System.out.println("Persistencia configurada como XML.");
-                    System.out.println("Turmas carregadas: " + controller.listClasses().size());
-                    return;
-                }
-                default -> System.out.println("Tipo de persistencia invalido.");
+            } catch (KeyboardInputException exception) {
+                System.out.println("Erro de entrada: " + exception.getMessage());
             }
         }
     }
@@ -264,46 +279,46 @@ public class ConsoleMenu {
         System.out.println("4 - Trabalho");
 
         while (true) {
-            int option = readInteger("Escolha o tipo da avaliacao: ");
+            try {
+                int option = readInteger("Escolha o tipo da avaliacao: ");
 
-            switch (option) {
-                case 1 -> {
-                    return "exam";
+                switch (option) {
+                    case 1 -> {
+                        return "exam";
+                    }
+                    case 2 -> {
+                        return "practical";
+                    }
+                    case 3 -> {
+                        return "seminar";
+                    }
+                    case 4 -> {
+                        return "assignment";
+                    }
+                    default -> throw new KeyboardInputException("Tipo de avaliacao invalido.");
                 }
-                case 2 -> {
-                    return "practical";
-                }
-                case 3 -> {
-                    return "seminar";
-                }
-                case 4 -> {
-                    return "assignment";
-                }
-                default -> System.out.println("Tipo de avaliacao invalido.");
+            } catch (KeyboardInputException exception) {
+                System.out.println("Erro de entrada: " + exception.getMessage());
             }
         }
     }
 
     private int readInteger(String prompt) {
-        while (true) {
-            try {
-                System.out.print(prompt);
-                return Integer.parseInt(scanner.nextLine().trim());
-            } catch (NumberFormatException exception) {
-                System.out.println("Numero invalido. Tente novamente.");
-            }
+        try {
+            System.out.print(prompt);
+            return Integer.parseInt(scanner.nextLine().trim());
+        } catch (NumberFormatException exception) {
+            throw new KeyboardInputException("Numero inteiro invalido.");
         }
     }
 
     private double readDouble(String prompt) {
-        while (true) {
-            try {
-                System.out.print(prompt);
-                String value = scanner.nextLine().trim().replace(',', '.');
-                return Double.parseDouble(value);
-            } catch (NumberFormatException exception) {
-                System.out.println("Numero invalido. Tente novamente.");
-            }
+        try {
+            System.out.print(prompt);
+            String value = scanner.nextLine().trim().replace(',', '.');
+            return Double.parseDouble(value);
+        } catch (NumberFormatException exception) {
+            throw new KeyboardInputException("Numero decimal invalido.");
         }
     }
 
