@@ -35,9 +35,9 @@
 
 | ID       | User Story                                                     | Status |
 |----------|----------------------------------------------------------------|--------|
-| US-2367  | Handle academic domain errors with custom exceptions           |        |
-| US-2368  | Handle keyboard input errors with custom exceptions            |        |
-| TUS-2371 | Validate academic domain objects using Jakarta Bean Validation |        |
+| US-2367  | Handle academic domain errors with custom exceptions           | ✅      |
+| US-2368  | Handle keyboard input errors with custom exceptions            | ✅      |
+| TUS-2371 | Validate academic domain objects using Jakarta Bean Validation | ✅      |
 
 ### Architecture and Refactoring
 
