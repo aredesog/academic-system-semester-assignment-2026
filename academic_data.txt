@@ -1,0 +1,26 @@
+Class Code: 55
+Class Title: Troia
+Assessments:
+=========================================
+Class Code: 56
+Class Title: six-seven
+Assessments:
+=========================================
+Class Code: 67
+Class Title: six-sevens
+Assessments:
+  - Type: Exam | Value: 5.0 | Weight: 10.0
+  - Type: Exam | Value: 6.0 | Weight: 10.0
+=========================================
+Class Code: 100
+Class Title: Teste
+Assessments:
+=========================================
+Class Code: 69
+Class Title: Aredola
+Assessments:
+=========================================
+Class Code: 64
+Class Title: Computacao
+Assessments:
+=========================================
