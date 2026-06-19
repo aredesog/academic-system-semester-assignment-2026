@@ -15,11 +15,11 @@
 
 | ID       | User Story                                  | Status |
 |----------|---------------------------------------------|--------|
-| TUS-2362 | Persist class assessments to TXT file       |        |
-| US-2372  | Configure persistence type as administrator |        |
-| US-2373  | Save academic data to XML file              |        |
-| US-2374  | Save academic data to JSON file             |        |
-| US-2377  | Generate persistence configuration report   |        |
+| TUS-2362 | Persist class assessments to TXT file       | ✅      |
+| US-2372  | Configure persistence type as administrator | ✅      |
+| US-2373  | Save academic data to XML file              | ✅      |
+| US-2374  | Save academic data to JSON file             | ✅      |
+| US-2377  | Generate persistence configuration report   | ✅      |
 
 ### Security Features
 

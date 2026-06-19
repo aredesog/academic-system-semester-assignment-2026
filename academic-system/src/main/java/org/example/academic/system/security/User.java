@@ -1,30 +1,38 @@
 package org.example.academic.system.security;
 
-import lombok.Getter;
-import lombok.NonNull;
 import org.example.academic.system.model.Role;
 
 import java.util.Objects;
 
 /**
  * Representa um usuário autenticável do sistema acadêmico.
- *
  * Equality é definida pelo username (TUS-2382).
  * A senha NUNCA deve ser logada (AC6 de US-2366, TUS-2391).
  */
-@Getter
 public class User {
 
     private final String username;
     private final String password;
     private final Role role;
 
-    public User(@NonNull String username,
-                @NonNull String password,
-                @NonNull Role role) {
-        this.username = username;
-        this.password = password;
-        this.role = role;
+    public User(String username,
+                String password,
+                Role role) {
+        this.username = Objects.requireNonNull(username, "username cannot be null");
+        this.password = Objects.requireNonNull(password, "password cannot be null");
+        this.role = Objects.requireNonNull(role, "role cannot be null");
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public Role getRole() {
+        return role;
     }
 
     /**

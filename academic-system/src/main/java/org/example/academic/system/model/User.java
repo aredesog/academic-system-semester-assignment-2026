@@ -1,18 +1,51 @@
 package org.example.academic.system.model;
 
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.ToString;
+import java.util.Objects;
 
-@Getter
-@AllArgsConstructor
-@ToString
-@EqualsAndHashCode(of = "username")
 public class User {
 
-    private String username;
-    private String password;
-    private Role role;
+    private final String username;
+    private final String password;
+    private final Role role;
 
+    public User(String username, String password, Role role) {
+        this.username = Objects.requireNonNull(username, "username cannot be null");
+        this.password = Objects.requireNonNull(password, "password cannot be null");
+        this.role = Objects.requireNonNull(role, "role cannot be null");
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public Role getRole() {
+        return role;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        }
+
+        if (!(object instanceof User user)) {
+            return false;
+        }
+
+        return Objects.equals(username, user.username);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(username);
+    }
+
+    @Override
+    public String toString() {
+        return "User{username='" + username + "', role=" + role + "}";
+    }
 }

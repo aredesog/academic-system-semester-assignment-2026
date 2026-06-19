@@ -1,9 +1,7 @@
 package org.example.academic.system.security;
 
-import lombok.Getter;
 import org.example.academic.system.model.User;
 
-@Getter
 public class Session {
     private static Session instance;
     private User authenticatedUser;
@@ -20,6 +18,10 @@ public class Session {
 
     public void login(User user) {
         this.authenticatedUser = user;
+    }
+
+    public User getAuthenticatedUser() {
+        return authenticatedUser;
     }
 
     public void logout() {
