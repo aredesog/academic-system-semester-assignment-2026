@@ -1,0 +1,47 @@
+name: 🧪 Testes Automatizados
+
+on:
+  push:
+    branches: [ main, master, develop ]
+  pull_request:
+    branches: [ main, master, develop ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 📥 Checkout do código
+      uses: actions/checkout@v4
+    
+    - name: ☕ Configurar Java 23
+      uses: actions/setup-java@v4
+      with:
+        java-version: '23'
+        distribution: 'temurin'
+        cache: maven
+    
+    - name: 🏗️ Compilar projeto
+      working-directory: academic-system
+      run: mvn clean compile
+    
+    - name: 🧪 Executar testes
+      working-directory: academic-system
+      run: mvn test
+    
+    - name: 📊 Publicar relatório de testes
+      if: always()
+      uses: dorny/test-reporter@v1
+      with:
+        name: Resultados dos Testes JUnit
+        path: 'academic-system/target/surefire-reports/*.xml'
+        reporter: 'java-junit'
+        fail-on-error: false
+    
+    - name: 📈 Fazer upload de artefatos
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: test-reports
+        path: academic-system/target/surefire-reports/
+        retention-days: 30
