@@ -1,0 +1,366 @@
+📚 RESUMO TÉCNICO - SISTEMA ACADÊMICO
+ 1. VISÃO GERAL
+Sistema de gestão acadêmica com autenticação RBAC, registro de turmas/avaliações, persistência multi-formato e geração de relatórios. Arquitetura em camadas: Models → Services → Controllers → Views.
+
+ 2. STACK TECNOLÓGICO
+• Linguagem: Java 25
+• Build: Maven 3.5+
+• Testes: JUnit 5 (jupiter 6.0.0)
+• Serialização: Jackson 2.18.2 (JSON/XML)
+• Validação: Jakarta Validation 3.1.1 + Hibernate Validator 8.0.2
+• Padrões: Strategy, Service Locator, Singleton, Factory
+
+3. ARQUITETURA E CAMADAS
+┌─ VIEW LAYER (ConsoleMenu)
+│   └─ Interage com usuário
+│
+├─ CONTROLLER LAYER
+│   ├─ AcademicSystemController (orquestra operations)
+│   └─ AuthenticationController (login/logout)
+│
+├─ SERVICE LAYER
+│   ├─ ClassService (registrar turmas)
+│   ├─ AssessmentService (registrar avaliações)
+│   ├─ ReportService (gerar relatórios)
+│   └─ PersistenceService (gerencia estratégias de salvamento)
+│
+├─ MODEL LAYER
+│   ├─ AcademicSystem (container de turmas)
+│   ├─ AcademicClass (turma com avaliações)
+│   ├─ Assessment (abstract) → Exam, Seminar, Assignment, PracticalAssignment
+│   ├─ User (username, password, role)
+│   ├─ Role (ADMIN, PROFESSOR)
+│   └─ PersistenceType (enum: TXT, JSON, XML)
+│
+├─ SECURITY LAYER
+│   ├─ AuthenticationService (valida credenciais)
+│   ├─ AuthorizationService (verifica permissões)
+│   └─ Session (singleton, armazena usuário logado)
+│
+├─ PERSISTENCE LAYER
+│   ├─ PersistenceStrategy (interface)
+│   ├─ TxtRepository
+│   ├─ JsonRepository
+│   ├─ XmlRepository
+│   └─ TxtUserRepository (users.txt)
+│
+├─ VALIDATION LAYER
+│   ├─ DomainValidator (valida objetos com Jakarta)
+│   └─ Anotações: @NotBlank, @Positive, @PositiveOrZero
+│
+└─ EXCEPTION LAYER
+    ├─ AcademicSystemException (negócio)
+    ├─ AuthenticationException (falha login)
+    ├─ AuthorizationException (sem permissão)
+    └─ KeyboardInputException (entrada inválida)
+
+4. FLUXO PRINCIPAL
+Main.java
+  │
+  ├─ Instancia AcademicSystem (container de dados)
+  ├─ Cria Services: ClassService, AssessmentService, ReportService, PersistenceService
+  ├─ Carrega dados salvos: persistenceService.load() → AcademicClass[]
+  ├─ Cria Controllers e passa Services
+  │
+  └─ ConsoleMenu.start()
+      │
+      ├─ AuthenticationController.login() → AuthenticationService.authenticate()
+      │   ├─ Busca User em TxtUserRepository
+      │   ├─ Valida credenciais (password)
+      │   └─ Session.login(user) (Singleton)
+      │
+      ├─ Menu dinâmico baseado em Role
+      │   ├─ ADMIN: Pode alterar persistência, ver config
+      │   └─ PROFESSOR: Registrar turmas, avaliações, gerar relatórios
+      │
+      └─ AcademicSystemController
+                ├─ registerClass() → ClassService.registerClass()
+                │   ├─ Cria AcademicClass com validation
+                │   ├─ Verifica duplicata
+                │   └─ Adiciona ao AcademicSystem
+                │
+                ├─ registerAssessment() → AssessmentService.registerAssessment()
+                │   ├─ Acha turma por code
+                │   ├─ Factory Pattern: cria Assessment (Exam, etc)
+                │   └─ Valida weight > 0
+                │
+                ├─ generateReports() → ReportService
+                │   ├─ ClassAssessmentSummary (turmas + avaliações)
+                │   └─ AssessmentWeightReport (total peso = 1.0?)
+                │
+                ├─ configurePersistenceType() → PersistenceService.configurePersistenceType()
+                │   ├─ Troca estratégia ativa (TXT ↔ JSON ↔ XML)
+                │   └─ Salva em persistence_config.txt
+                │
+                └─ saveData() → persistenceService.save()
+                    └─ currentStrategy.save() [Polimorfismo]
+
+  5. MODELOS DE DOMÍNIO
+   AcademicClass
+  - code: String (PK, @NotBlank)
+  - title: String (@NotBlank)
+  - assessments: List<Assessment>
+
+  Métodos:
+  - addAssessment(Assessment)
+  - getAssessments()
+  - equals() → baseado em code
+  - hashCode() → baseado em code
+
+  Assessment (Abstract)
+  - value: double (@PositiveOrZero)
+  - weight: double (@Positive, validado no construtor)
+
+  Subclasses:
+  - Exam → getType() = "Exam"
+  - PracticalAssignment → getType() = "Practical Assignment"
+  - Seminar → getType() = "Seminar"
+  - Assignment → getType() = "Assignment"
+
+  Construtor valida automaticamente com DomainValidator.validate(this)
+
+ User
+  - username: String (PK, imutável)
+  - password: String (imutável)
+  - role: Role (enum: ADMIN, PROFESSOR)
+
+  equals() → baseado em username
+  hashCode() → baseado em username
+
+6. SERVIÇOS
+ ClassService
+  registerClass(code, title)
+  ├─ Cria AcademicClass
+  ├─ Valida com Jakarta Validation
+  ├─ Verifica duplicata por code
+  └─ Adiciona ao AcademicSystem
+ AssessmentService
+  registerAssessment(classCode, assessmentType, value, weight)
+  ├─ Encontra turma ou throws AcademicSystemException
+  ├─ Factory: cria Assessment correto (switch/case)
+  └─ Adiciona à turma
+ ReportService
+  generateClassAssessmentSummaryReport()
+   ├─ Lista todas turmas + avaliações
+   └─ Formata para exibição
+
+  generateAssessmentWeightReport()
+   ├─ Calcula peso total por turma
+   ├─ Valida se totalWeight ≈ 1.0 (tolerância: 0.0001)
+   └─ Marca como válido/inválido
+
+ PersistenceService
+  configurePersistenceType(type: PersistenceType, saveConfig: boolean)
+  ├─ Strategy Pattern: instancia TxtRepository, JsonRepository, ou XmlRepository
+  ├─ Se saveConfig=true, persiste em persistence_config.txt
+  └─ Carrega automaticamente no constructor
+
+  save(classes)
+  ├─ Delega para currentStrategy.save()
+
+  load()
+  ├─ Delega para currentStrategy.load()
+  ├─ Carregado em Main.java na inicialização
+  └─ Substitui AcademicSystem.replaceClasses()
+
+  getCurrentFormatName()
+  └─ Retorna nome do formato ativo (para relatório US-2377)
+
+7. SEGURANÇA
+ AuthenticationService
+  authenticate(username, password)
+  ├─ Busca User em UserRepository (TxtUserRepository)
+  ├─ Valida password exatamente
+  ├─ Se OK: Session.login(user)
+  └─ Se FAIL: throws AuthenticationException("Invalid credentials")
+   Session (Singleton)
+  - Armazena usuário logado
+  - getInstance() → retorna instância única
+  - login(user) → seta usuário
+  - logout() → limpa usuário
+  - getCurrentUser() → obtém usuário ativo
+   AuthorizationService
+  isAdmin()
+  ├─ Obtém Session.getCurrentUser()
+  └─ Verifica role == ADMIN
+
+8. VALIDAÇÃO
+
+  DomainValidator.java (classe singleton):
+  validate(Object obj)
+  ├─ Cria ValidatorFactory do Jakarta
+  ├─ Extrai constraints (@NotBlank, @Positive, etc)
+  └─ Se violações → throws ConstraintViolationException com mensagens
+
+  Anotações usadas:
+  •  @NotBlank → AcademicClass.code, title
+  • @Positive → Assessment.weight
+  • @PositiveOrZero → Assessment.value
+
+9. PERSISTÊNCIA
+
+  PersistenceStrategy (Interface)
+  void save(List<AcademicClass>)
+  List<AcademicClass> load()
+  String getFormatName()
+
+  Implementações:
+  • TxtRepository → Formato texto simples
+  • JsonRepository → Jackson ObjectMapper (JSON)
+  • XmlRepository → Jackson XmlMapper (XML)
+  • TxtUserRepository → Carrega users.txt para autenticação
+
+  Arquivo de Config:
+  persistence_config.txt
+  └─ Contém nome da estratégia atual (TXT, JSON, XML)
+  └─ Carregado ao iniciar PersistenceService
+  └─ Permite trocar tipo sem perder dados
+
+ 10. EXCEÇÕES
+
+  AcademicSystemException
+  ├─ Turma não encontrada
+  ├─ Código de turma duplicado
+  └─ Tipo de avaliação inválido
+
+  AuthenticationException
+  ├─ Credenciais inválidas
+
+  AuthorizationException
+  ├─ Usuário sem permissão
+
+  KeyboardInputException
+  ├─ Entrada inválida do usuário
+
+11. ESTRUTURA DE DIRETÓRIOS
+academic-system/
+├── pom.xml
+├── persistence_config.txt (gerado automaticamente)
+├── users.txt (dados de usuários)
+├── src/main/java/org/example/academic/system/
+│   ├── Main.java
+│   ├── model/
+│   │   ├── AcademicClass.java
+│   │   ├── AcademicSystem.java
+│   │   ├── Assessment.java + subclasses
+│   │   ├── User.java
+│   │   ├── Role.java
+│   │   └── PersistenceType.java
+│   ├── service/
+│   │   ├── ClassService.java
+│   │   ├── AssessmentService.java
+│   │   ├── ReportService.java
+│   │   └── PersistenceService.java
+│   ├── controller/
+│   │   ├── AcademicSystemController.java
+│   │   └── AuthenticationController.java
+│   ├── security/
+│   │   ├── AuthenticationService.java
+│   │   ├── AuthorizationService.java
+│   │   └── Session.java
+│   ├── repository/
+│   │   ├── PersistenceStrategy.java
+│   │   ├── TxtRepository.java
+│   │   ├── JsonRepository.java
+│   │   ├── XmlRepository.java
+│   │   ├── UserRepository.java
+│   │   └── TxtUserRepository.java
+│   ├── validation/
+│   │   └── DomainValidator.java
+│   ├── exception/
+│   │   ├── AcademicSystemException.java
+│   │   ├── AuthenticationException.java
+│   │   ├── AuthorizationException.java
+│   │   └── KeyboardInputException.java
+│   ├── report/
+│   │   └── ReportGenerator.java
+│   └── view/
+│       └── ConsoleMenu.java
+└── src/test/java/ (vazio - pronto para testes)
+
+12. PADRÕES ARQUITETURAIS
+
+ [Padrão]             [Localização]                         [Descrição]
+Strategy            PersistenceStrategy    Diferentes formatos de salvamento (TXT/JSON/XML)
+Factory             AssessmentService           Cria tipos de Assessment corretos
+Singleton               Session                     Gerencia sessão do usuário
+Service Locator     Services + Controllers        Injeção de dependências manual
+Repository              repository/                 Abstração de persistência
+Template Method     Assessment (abstract)       Subclasses implementam getType()
+
+13. FLUXOS CRÍTICOS
+
+  Fluxo de Registro de Turma:
+  ConsoleMenu → AcademicSystemController.registerClass(code, title)
+    → ClassService.registerClass(code, title)
+      → AcademicClass(code, title)
+        → DomainValidator.validate() [Validação Jakarta]
+      → AcademicSystem.findClassByCode() [Verifica duplicata]
+      → AcademicSystem.addClass() [Adiciona]
+
+  Fluxo de Salvamento:
+  ConsoleMenu → AcademicSystemController.saveData()
+    → PersistenceService.save(classes)
+      → currentStrategy.save(classes)
+        → Jackson ObjectMapper/XmlMapper
+        → Escreve em arquivo (academic_data.txt/json/xml)
+
+  Fluxo de Login:
+  ConsoleMenu.start()
+    → AuthenticationController.login(username, password)
+      → AuthenticationService.authenticate(username, password)
+        → TxtUserRepository.findByUsername()
+        → Compara password
+        → Session.login(user)
+
+14. PONTOS DE EXTENSÃO
+  Para adicionar novas features:
+[Feature]                                       [Onde Adicionar]                                                         [Exemplo]
+Novo tipo de avaliação          Assessment.java subclass + AssessmentService.createAssessment() switch          class Quiz extends Assessment
+Novo formato de persistência    Nova classe em repository/ + implementar PersistenceStrategy                        DatabaseRepository.java
+Novo tipo de relatório              Adicionar método em ReportService                                           generateStudentReportCard()
+Nova role                       Adicionar enum value em Role.java + verificação em AuthorizationService               Role.COORDINATOR
+Validação customizada           Adicionar anotação em model/ + custom validator em validation/                          @ValidWeight
+
+ 15. DEPENDÊNCIAS CRÍTICAS
+<!-- Validação -->
+jakarta.validation:jakarta.validation-api:3.1.1
+org.hibernate.validator:hibernate-validator:8.0.2
+
+<!-- Serialização -->
+com.fasterxml.jackson.core:jackson-databind:2.18.2
+com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.18.2
+
+<!-- Testes -->
+org.junit.jupiter:junit-jupiter:6.0.0
+
+ 16. ESTADO ATUAL (user stories completadas)
+✅ Autenticação RBAC (US-2366)
+✅ Registro de turmas (US-2363)
+✅ Registro de avaliações (US-2361)
+✅ Persistência multi-formato (US-2362, 2373, 2374)
+✅ Relatórios (US-2375, 2376, 2377)
+✅ Menu dinâmico por role (US-2378, 2380)
+❌ Testes automatizados (TUS-2383-2405 pendentes)
+❌ Logging (TUS-2390-2394 pendentes)
+❌ JavaFX GUI (TUS-2406-2413 pendentes)
+❌ CI/CD (TUS-2415-2420 pendentes)
+
+17. COMO USAR (para referência)
+
+# Compilar
+mvn clean compile
+
+# Executar
+mvn exec:java
+
+# Testar
+mvn test
+
+Arquivo de configuração esperado (persistence_config.txt):
+TXT
+
+
+Document Type: Technical Reference
+ Updated: 2026-06-19
+ Language: Português (PT-BR)
