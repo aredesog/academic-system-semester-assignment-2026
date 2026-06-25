@@ -24,3 +24,11 @@ Class Code: 64
 Class Title: Computacao
 Assessments:
 =========================================
+Class Code: 1234577
+Class Title: aiiiii
+Assessments:
+=========================================
+Class Code: CC101
+Class Title: Testes
+Assessments:
+=========================================
