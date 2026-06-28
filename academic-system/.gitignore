@@ -37,3 +37,10 @@ build/
 
 ### Mac OS ###
 .DS_Store
+
+### Generated runtime files ###
+academic_data.txt
+academic_data.json
+academic_data.xml
+persistence_config.txt
+logs/

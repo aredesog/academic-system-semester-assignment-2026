@@ -2,7 +2,10 @@ package org.example.academic.system.service;
 
 import org.example.academic.system.model.AcademicClass;
 import org.example.academic.system.model.PersistenceType;
+import org.example.academic.system.report.ReportGenerator;
 import org.example.academic.system.repository.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -10,19 +13,17 @@ import java.nio.file.Path;
 import java.util.List;
 
 public class PersistenceService {
+
+    private static final Logger logger = LoggerFactory.getLogger(PersistenceService.class);
+
     private static final Path CONFIG_FILE = Path.of("persistence_config.txt");
 
-    // Guarda a estratégia de persistência configurada atualmente
     private PersistenceStrategy currentStrategy;
 
     public PersistenceService() {
         configurePersistenceType(loadConfiguredPersistenceType(), false);
     }
 
-    /**
-     * Altera o tipo de persistência ativo no sistema (US-2372)
-     * Esse metodo deve ser chamado pelo Controller após validar se o usuário é ADMIN
-     */
     public void configurePersistenceType(PersistenceType type) {
         configurePersistenceType(type, true);
     }
@@ -43,48 +44,42 @@ public class PersistenceService {
                 this.currentStrategy = new XmlRepository();
                 break;
             default:
-                // Should never happen because all enum values are handled
                 throw new IllegalArgumentException("Tipo de persistência inválido: " + type);
         }
+
+        logger.info("Persistence type configured to: {}", type);
 
         if (saveConfiguration) {
             saveConfiguredPersistenceType(type);
         }
     }
 
-    /**
-     * Delega o salvamento dos dados para o repositório configurado (US-2362, US-2373, US-2374)
-     */
     public void save(List<AcademicClass> classes) {
         if (currentStrategy == null) {
             throw new IllegalStateException("Nenhuma estratégia de persistência configurada.");
         }
-        // Executa o salvamento no formato atual sem alterar o modelo de domínio (AC6/AC7)
+        logger.info("Saving {} class(es) using {} persistence", classes.size(), currentStrategy.getFormatName());
         currentStrategy.save(classes);
+        logger.info("Data saved successfully using {} format", currentStrategy.getFormatName());
     }
 
-    /**
-     * CORRIGIDO / ADICIONADO:
-     * Carrega as turmas gravadas no formato configurado atualmente (Estratégia Ativa)
-     */
     public List<AcademicClass> load() {
         if (currentStrategy == null) {
             throw new IllegalStateException("Nenhuma estratégia de persistência configurada.");
         }
-        // Delega a leitura para o repositório ativo no momento
-        return currentStrategy.load();
+        logger.info("Loading data using {} persistence", currentStrategy.getFormatName());
+        List<AcademicClass> classes = currentStrategy.load();
+        logger.info("Loaded {} class(es) from {} persistence", classes.size(), currentStrategy.getFormatName());
+        return classes;
     }
 
-    /**
-     * Retorna o nome do formato atual para o gerador de relatórios (US-2377)
-     */
     public String getCurrentFormatName() {
         return currentStrategy != null ? currentStrategy.getFormatName() : "NENHUM";
     }
 
     public String generateConfigurationReport() {
-        return "===== Relatorio de Configuracao de Persistencia =====" + System.lineSeparator()
-                + "Tipo de persistencia ativo: " + getCurrentFormatName();
+        logger.info("Generating persistence configuration report. Active format: {}", getCurrentFormatName());
+        return ReportGenerator.persistenceConfigurationReport(getCurrentFormatName());
     }
 
     private PersistenceType loadConfiguredPersistenceType() {
