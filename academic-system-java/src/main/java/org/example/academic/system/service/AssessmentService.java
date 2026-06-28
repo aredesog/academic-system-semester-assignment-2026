@@ -12,10 +12,12 @@ import org.example.academic.system.model.Seminar;
 public class AssessmentService {
     private final AcademicSystem academicSystem;
 
+    // Injeta o modelo central do sistema para acesso às turmas
     public AssessmentService(AcademicSystem academicSystem) {
         this.academicSystem = academicSystem;
     }
 
+    // Localiza a turma pelo código e adiciona a avaliação criada a ela
     public void registerAssessment(String classCode, String assessmentType, double value, double weight) {
         AcademicClass academicClass = academicSystem.findClassByCode(classCode)
                 .orElseThrow(() -> new AcademicSystemException("Turma nao encontrada."));
@@ -24,6 +26,7 @@ public class AssessmentService {
         academicClass.addAssessment(assessment);
     }
 
+    // Instancia a subclasse correta de Assessment com base no tipo informado como string
     private Assessment createAssessment(String assessmentType, double value, double weight) {
         if (assessmentType == null) {
             throw new AcademicSystemException("O tipo da avaliacao nao pode estar vazio.");

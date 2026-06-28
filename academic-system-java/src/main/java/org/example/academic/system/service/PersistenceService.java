@@ -20,14 +20,17 @@ public class PersistenceService {
 
     private PersistenceStrategy currentStrategy;
 
+    // Inicializa o serviço carregando o tipo de persistência salvo anteriormente
     public PersistenceService() {
         configurePersistenceType(loadConfiguredPersistenceType(), false);
     }
 
+    // Ponto de entrada público para trocar o tipo de persistência e salvar a nova configuração
     public void configurePersistenceType(PersistenceType type) {
         configurePersistenceType(type, true);
     }
 
+    // Define a estratégia de persistência ativa e opcionalmente persiste a escolha no arquivo de configuração
     private void configurePersistenceType(PersistenceType type, boolean saveConfiguration) {
         if (type == null) {
             throw new IllegalArgumentException("Tipo de persistência não pode ser nulo.");
@@ -54,6 +57,7 @@ public class PersistenceService {
         }
     }
 
+    // Delega o salvamento das turmas para a estratégia de persistência atualmente ativa
     public void save(List<AcademicClass> classes) {
         if (currentStrategy == null) {
             throw new IllegalStateException("Nenhuma estratégia de persistência configurada.");
@@ -63,6 +67,7 @@ public class PersistenceService {
         logger.info("Data saved successfully using {} format", currentStrategy.getFormatName());
     }
 
+    // Delega o carregamento das turmas para a estratégia de persistência atualmente ativa
     public List<AcademicClass> load() {
         if (currentStrategy == null) {
             throw new IllegalStateException("Nenhuma estratégia de persistência configurada.");
@@ -73,15 +78,18 @@ public class PersistenceService {
         return classes;
     }
 
+    // Retorna o nome do formato de persistência atualmente configurado
     public String getCurrentFormatName() {
         return currentStrategy != null ? currentStrategy.getFormatName() : "NENHUM";
     }
 
+    // Gera relatório textual indicando qual tipo de persistência está ativo
     public String generateConfigurationReport() {
         logger.info("Generating persistence configuration report. Active format: {}", getCurrentFormatName());
         return ReportGenerator.persistenceConfigurationReport(getCurrentFormatName());
     }
 
+    // Lê o tipo de persistência salvo no arquivo de configuração; retorna TXT como padrão se não encontrado
     private PersistenceType loadConfiguredPersistenceType() {
         if (!Files.exists(CONFIG_FILE)) {
             return PersistenceType.TXT;
@@ -100,6 +108,7 @@ public class PersistenceService {
         }
     }
 
+    // Grava o tipo de persistência escolhido no arquivo de configuração para recuperação futura
     private void saveConfiguredPersistenceType(PersistenceType type) {
         try {
             Files.writeString(CONFIG_FILE, type.name());

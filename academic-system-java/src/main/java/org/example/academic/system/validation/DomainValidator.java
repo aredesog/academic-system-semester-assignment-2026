@@ -16,9 +16,11 @@ import java.util.stream.Collectors;
 public class DomainValidator {
     private static final Validator VALIDATOR = createValidator();
 
+    // Construtor privado para impedir instanciação — classe utilitária com apenas métodos estáticos
     private DomainValidator() {
     }
 
+    // Valida um objeto usando as anotações Bean Validation (@NotBlank, @Positive, etc.) e lança exceção com todas as violações encontradas
     public static <T> void validate(T object) {
         Set<ConstraintViolation<T>> violations = VALIDATOR.validate(object);
 
@@ -32,6 +34,7 @@ public class DomainValidator {
         }
     }
 
+    // Cria e configura o Validator do Hibernate sem EL para evitar dependência de Jakarta EL
     private static Validator createValidator() {
         Logger.getLogger("org.hibernate.validator").setLevel(Level.OFF);
 

@@ -10,6 +10,7 @@ class AssessmentService:
     def __init__(self, academic_system: AcademicSystem):
         self._academic_system = academic_system
 
+    # Localiza a turma pelo código e adiciona a avaliação criada a ela
     def register_assessment(
         self, class_code: str, assessment_type: str, value: float, weight: float
     ) -> None:
@@ -19,6 +20,7 @@ class AssessmentService:
         assessment = self._create_assessment(assessment_type, value, weight)
         academic_class.add_assessment(assessment)
 
+    # Instancia a subclasse correta de Assessment com base no tipo informado como string
     def _create_assessment(self, assessment_type: str, value: float, weight: float):
         if assessment_type is None:
             raise AcademicSystemException("Tipo de avaliacao nao pode ser nulo.")

@@ -14,6 +14,7 @@ import java.util.List;
 
 public class JsonRepository implements PersistenceStrategy {
 
+    // Serializa a lista de turmas para o arquivo academic_data.json no formato indentado
     @Override
     public void save(List<AcademicClass> classes) {
         try {
@@ -25,6 +26,7 @@ public class JsonRepository implements PersistenceStrategy {
         }
     }
 
+    // Lê o arquivo JSON e reconstrói a lista de turmas com suas avaliações
     @Override
     public List<AcademicClass> load() {
         File file = new File("academic_data.json");
@@ -47,11 +49,13 @@ public class JsonRepository implements PersistenceStrategy {
         return new ArrayList<>();
     }
 
+    // Retorna o nome do formato para uso nos logs e relatórios
     @Override
     public String getFormatName() {
         return "JSON";
     }
 
+    // Converte a lista de AcademicClass para DTOs simples antes de serializar
     private List<StoredClass> toStoredClasses(List<AcademicClass> classes) {
         List<StoredClass> storedClasses = new ArrayList<>();
 
@@ -74,6 +78,7 @@ public class JsonRepository implements PersistenceStrategy {
         return storedClasses;
     }
 
+    // Reconstrói objetos AcademicClass a partir dos DTOs lidos do arquivo
     private List<AcademicClass> toAcademicClasses(List<StoredClass> storedClasses) {
         List<AcademicClass> classes = new ArrayList<>();
 
@@ -90,6 +95,7 @@ public class JsonRepository implements PersistenceStrategy {
         return classes;
     }
 
+    // Instancia a subclasse correta de Assessment com base no tipo armazenado no JSON
     private Assessment createAssessment(StoredAssessment storedAssessment) {
         String type = storedAssessment.type == null ? "" : storedAssessment.type.trim().toLowerCase();
 

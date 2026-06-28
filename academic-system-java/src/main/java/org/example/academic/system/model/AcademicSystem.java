@@ -8,14 +8,17 @@ import java.util.Optional;
 public class AcademicSystem {
     private final List<AcademicClass> classes;
 
+    // Inicializa o sistema com uma lista vazia de turmas
     public AcademicSystem() {
         this.classes = new ArrayList<>();
     }
 
+    // Adiciona uma nova turma à lista do sistema
     public void addClass(AcademicClass academicClass) {
         classes.add(academicClass);
     }
 
+    // Substitui todas as turmas existentes pelas turmas carregadas (usada ao trocar tipo de persistência)
     public void replaceClasses(List<AcademicClass> loadedClasses) {
         classes.clear();
 
@@ -24,6 +27,7 @@ public class AcademicSystem {
         }
     }
 
+    // Busca uma turma pelo código, ignorando maiúsculas/minúsculas e espaços
     public Optional<AcademicClass> findClassByCode(String code) {
         if (code == null) {
             return Optional.empty();
@@ -34,6 +38,7 @@ public class AcademicSystem {
                 .findFirst();
     }
 
+    // Retorna a lista de turmas como visão imutável para evitar modificações externas
     public List<AcademicClass> getClasses() {
         return Collections.unmodifiableList(classes);
     }

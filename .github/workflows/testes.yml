@@ -22,26 +22,26 @@ jobs:
         cache: maven
     
     - name: 🏗️ Compilar projeto
-      working-directory: academic-system
+      working-directory: academic-system-java
       run: mvn clean compile
-    
+
     - name: 🧪 Executar testes
-      working-directory: academic-system
+      working-directory: academic-system-java
       run: mvn test
-    
+
     - name: 📊 Publicar relatório de testes
       if: always()
       uses: dorny/test-reporter@v1
       with:
         name: Resultados dos Testes JUnit
-        path: 'academic-system/target/surefire-reports/*.xml'
+        path: 'academic-system-java/target/surefire-reports/*.xml'
         reporter: 'java-junit'
         fail-on-error: false
-    
+
     - name: 📈 Fazer upload de artefatos
       if: always()
       uses: actions/upload-artifact@v4
       with:
         name: test-reports
-        path: academic-system/target/surefire-reports/
+        path: academic-system-java/target/surefire-reports/
         retention-days: 30

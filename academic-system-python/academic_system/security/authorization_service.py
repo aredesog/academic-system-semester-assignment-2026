@@ -11,6 +11,7 @@ class AuthorizationService:
     def __init__(self):
         self._session = Session.get_instance()
 
+    # Verifica se o usuário autenticado possui um dos papéis exigidos; lança exceção se não autorizado
     def authorize(self, *required_roles: Role) -> None:
         user = self._session.get_authenticated_user()
 

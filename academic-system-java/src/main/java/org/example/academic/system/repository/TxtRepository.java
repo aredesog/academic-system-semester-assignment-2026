@@ -11,6 +11,7 @@ import java.util.List;
 
 public class TxtRepository implements PersistenceStrategy {
 
+    // Escreve cada turma e suas avaliações no arquivo academic_data.txt em formato legível
     @Override
     public void save(List<AcademicClass> classes) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter("academic_data.txt"))) {
@@ -34,6 +35,7 @@ public class TxtRepository implements PersistenceStrategy {
         }
     }
 
+    // Lê o arquivo TXT linha a linha e reconstrói as turmas com suas avaliações
     @Override
     public List<AcademicClass> load() {
         List<AcademicClass> classes = new ArrayList<>();
@@ -90,6 +92,7 @@ public class TxtRepository implements PersistenceStrategy {
         return classes;
     }
 
+    // Retorna o nome do formato para uso nos logs e relatórios
     @Override
     public String getFormatName() {
         return "TXT";

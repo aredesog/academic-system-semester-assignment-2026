@@ -14,6 +14,7 @@ public class AuthorizationService {
 
     private final Session session = Session.getInstance();
 
+    // Verifica se o usuário autenticado possui um dos papéis exigidos; lança exceção se não autorizado
     public void authorize(Role... requiredRoles) {
         User authenticatedUser = session.getAuthenticatedUser();
 

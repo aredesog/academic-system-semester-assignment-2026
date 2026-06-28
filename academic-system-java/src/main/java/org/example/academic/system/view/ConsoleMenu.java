@@ -20,12 +20,14 @@ public class ConsoleMenu {
     private final AuthenticationController authenticationController;
     private final Scanner scanner;
 
+    // Injeta os controllers e cria o Scanner para leitura do console
     public ConsoleMenu(AcademicSystemController controller, AuthenticationController authenticationController) {
         this.controller = controller;
         this.authenticationController = authenticationController;
         this.scanner = new Scanner(System.in);
     }
 
+    // Inicia o loop principal do sistema: autentica o usuário e exibe o menu correspondente ao papel dele
     public void start() {
         boolean running = true;
 
@@ -40,6 +42,7 @@ public class ConsoleMenu {
         }
     }
 
+    // Solicita credenciais em loop até que o login seja bem-sucedido
     private User login() {
         while (true) {
             System.out.println();
@@ -59,6 +62,7 @@ public class ConsoleMenu {
         }
     }
 
+    // Exibe o menu do administrador em loop, retornando false ao sair ou true ao fazer logout
     private boolean showAdminMenu() {
         int option;
 
@@ -93,6 +97,7 @@ public class ConsoleMenu {
         } while (true);
     }
 
+    // Exibe o menu do professor em loop com opções reduzidas, retornando false ao sair ou true ao fazer logout
     private boolean showProfessorMenu() {
         int option;
 
@@ -123,6 +128,7 @@ public class ConsoleMenu {
         } while (true);
     }
 
+    // Imprime as opções disponíveis para o perfil ADMIN
     private void printAdminMenu() {
         System.out.println();
         System.out.println("===== Sistema Academico - ADMIN =====");
@@ -139,6 +145,7 @@ public class ConsoleMenu {
         System.out.println("0 - Sair");
     }
 
+    // Imprime as opções disponíveis para o perfil PROFESSOR
     private void printProfessorMenu() {
         System.out.println();
         System.out.println("===== Sistema Academico - PROFESSOR =====");
@@ -151,6 +158,7 @@ public class ConsoleMenu {
         System.out.println("0 - Sair");
     }
 
+    // Executa uma ação do menu capturando e exibindo erros sem interromper o loop principal
     private void execute(MenuAction action) {
         try {
             action.run();
@@ -163,6 +171,7 @@ public class ConsoleMenu {
         }
     }
 
+    // Lê código e título do console e solicita o cadastro da turma ao controller
     private void registerClass() {
         String code = readText("Codigo da turma: ");
         String title = readText("Titulo da turma: ");
@@ -171,6 +180,7 @@ public class ConsoleMenu {
         System.out.println("Turma cadastrada com sucesso.");
     }
 
+    // Lê os dados da avaliação do console e solicita o cadastro ao controller
     private void registerAssessment() {
         String classCode = readText("Codigo da turma: ");
         String assessmentType = readAssessmentType();
@@ -181,6 +191,7 @@ public class ConsoleMenu {
         System.out.println("Avaliacao cadastrada com sucesso.");
     }
 
+    // Exibe no console todas as turmas com suas respectivas avaliações
     private void listClasses() {
         List<AcademicClass> classes = controller.listClasses();
 
@@ -205,6 +216,7 @@ public class ConsoleMenu {
         }
     }
 
+    // Traduz o tipo de avaliação do inglês para o português para exibição no console
     private String formatAssessmentType(Assessment assessment) {
         return switch (assessment.getType()) {
             case "Exam" -> "Exame";
@@ -215,23 +227,28 @@ public class ConsoleMenu {
         };
     }
 
+    // Solicita e exibe o relatório de avaliações por turma
     private void printClassAssessmentSummaryReport() {
         System.out.println(controller.generateClassAssessmentSummaryReport());
     }
 
+    // Solicita e exibe o relatório de peso das avaliações por turma
     private void printAssessmentWeightReport() {
         System.out.println(controller.generateAssessmentWeightReport());
     }
 
+    // Solicita o salvamento manual dos dados acadêmicos e confirma ao usuário
     private void saveAcademicData() {
         controller.saveAcademicData();
         System.out.println("Dados academicos salvos com sucesso.");
     }
 
+    // Solicita e exibe o relatório de configuração de persistência ativa
     private void printPersistenceConfigurationReport() {
         System.out.println(controller.generatePersistenceConfigurationReport());
     }
 
+    // Apresenta as opções de formato e aplica o tipo de persistência escolhido
     private void configurePersistenceType() {
         System.out.println("Tipo de persistencia:");
         System.out.println("1 - TXT");
@@ -269,11 +286,13 @@ public class ConsoleMenu {
         }
     }
 
+    // Exibe um prompt e retorna o texto digitado pelo usuário
     private String readText(String prompt) {
         System.out.print(prompt);
         return scanner.nextLine();
     }
 
+    // Exibe um submenu para o usuário escolher o tipo de avaliação e retorna a string correspondente
     private String readAssessmentType() {
         System.out.println("Tipo da avaliacao:");
         System.out.println("1 - Exame");
@@ -306,6 +325,7 @@ public class ConsoleMenu {
         }
     }
 
+    // Lê um número inteiro do console, lançando exceção se a entrada não for numérica
     private int readInteger(String prompt) {
         try {
             System.out.print(prompt);
@@ -315,6 +335,7 @@ public class ConsoleMenu {
         }
     }
 
+    // Lê um número decimal do console, aceitando vírgula como separador, lançando exceção se inválido
     private double readDouble(String prompt) {
         try {
             System.out.print(prompt);

@@ -14,6 +14,7 @@ public class TxtUserRepository implements UserRepository {
 
     private final List<User> users = new ArrayList<>();
 
+    // Carrega os usuários do arquivo users.txt; usa credenciais padrão se o arquivo não existir
     public TxtUserRepository() {
         try (BufferedReader reader = new BufferedReader(new FileReader("users.txt"))) {
             String line;
@@ -29,6 +30,7 @@ public class TxtUserRepository implements UserRepository {
         }
     }
 
+    // Busca um usuário pelo nome de login, ignorando diferença de maiúsculas/minúsculas
     @Override
     public Optional<User> findByUsername(String username) {
         return users.stream()

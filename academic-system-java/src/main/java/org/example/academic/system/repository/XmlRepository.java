@@ -14,6 +14,7 @@ import java.util.List;
 
 public class XmlRepository implements PersistenceStrategy {
 
+    // Serializa a lista de turmas para o arquivo academic_data.xml usando Jackson XML
     @Override
     public void save(List<AcademicClass> classes) {
         try {
@@ -25,6 +26,7 @@ public class XmlRepository implements PersistenceStrategy {
         }
     }
 
+    // Lê o arquivo XML e reconstrói a lista de turmas com suas avaliações
     @Override
     public List<AcademicClass> load() {
         File file = new File("academic_data.xml");
@@ -47,11 +49,13 @@ public class XmlRepository implements PersistenceStrategy {
         return new ArrayList<>();
     }
 
+    // Retorna o nome do formato para uso nos logs e relatórios
     @Override
     public String getFormatName() {
         return "XML";
     }
 
+    // Converte a lista de AcademicClass para DTOs simples antes de serializar em XML
     private List<StoredClass> toStoredClasses(List<AcademicClass> classes) {
         List<StoredClass> storedClasses = new ArrayList<>();
 
@@ -74,6 +78,7 @@ public class XmlRepository implements PersistenceStrategy {
         return storedClasses;
     }
 
+    // Reconstrói objetos AcademicClass a partir dos DTOs lidos do arquivo XML
     private List<AcademicClass> toAcademicClasses(List<StoredClass> storedClasses) {
         List<AcademicClass> classes = new ArrayList<>();
 
@@ -90,6 +95,7 @@ public class XmlRepository implements PersistenceStrategy {
         return classes;
     }
 
+    // Instancia a subclasse correta de Assessment com base no tipo armazenado no XML
     private Assessment createAssessment(StoredAssessment storedAssessment) {
         String type = storedAssessment.type == null ? "" : storedAssessment.type.trim().toLowerCase();
 

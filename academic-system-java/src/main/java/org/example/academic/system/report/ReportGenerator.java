@@ -9,6 +9,7 @@ public class ReportGenerator {
 
     private static final double VALID_WEIGHT_TOLERANCE = 0.0001;
 
+    // Gera relatório textual listando cada turma com suas avaliações, valor e peso
     public static String classAssessmentSummaryReport(List<AcademicClass> classes) {
         StringBuilder report = new StringBuilder();
         report.append("===== Relatorio de Avaliacoes por Turma =====").append(System.lineSeparator());
@@ -41,6 +42,7 @@ public class ReportGenerator {
         return report.toString();
     }
 
+    // Gera relatório mostrando o peso total das avaliações de cada turma e se está válido (soma = 1.0)
     public static String assessmentWeightReport(List<AcademicClass> classes) {
         StringBuilder report = new StringBuilder();
         report.append("===== Relatorio de Peso das Avaliacoes =====").append(System.lineSeparator());
@@ -67,21 +69,25 @@ public class ReportGenerator {
         return report.toString();
     }
 
+    // Gera relatório informando qual tipo de persistência está ativo no momento
     public static String persistenceConfigurationReport(String formatName) {
         return "===== Relatorio de Configuracao de Persistencia =====" + System.lineSeparator()
                 + "Tipo de persistencia ativo: " + formatName;
     }
 
+    // Soma todos os pesos das avaliações de uma turma
     private static double calculateTotalWeight(AcademicClass academicClass) {
         return academicClass.getAssessments().stream()
                 .mapToDouble(Assessment::getWeight)
                 .sum();
     }
 
+    // Verifica se a soma dos pesos está suficientemente próxima de 1.0 (tolerância de 0.0001)
     private static boolean isValidWeight(double totalWeight) {
         return Math.abs(totalWeight - 1.0) < VALID_WEIGHT_TOLERANCE;
     }
 
+    // Traduz o tipo de avaliação do inglês para o português para exibição no relatório
     private static String formatAssessmentType(Assessment assessment) {
         return switch (assessment.getType()) {
             case "Exam" -> "Exame";

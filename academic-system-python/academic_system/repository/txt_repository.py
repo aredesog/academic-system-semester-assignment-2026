@@ -12,6 +12,7 @@ from ..model.seminar import Seminar
 class TxtRepository(PersistenceStrategy):
     FILE_NAME = "academic_data.txt"
 
+    # Escreve cada turma e suas avaliações no arquivo TXT em formato legível
     def save(self, classes: List[AcademicClass]) -> None:
         try:
             with open(self.FILE_NAME, "w", encoding="utf-8") as f:
@@ -29,6 +30,7 @@ class TxtRepository(PersistenceStrategy):
         except Exception as e:
             print(f"Erro ao salvar os dados em TXT: {e}")
 
+    # Lê o arquivo TXT linha a linha e reconstrói as turmas com suas avaliações
     def load(self) -> List[AcademicClass]:
         classes = []
         if not os.path.exists(self.FILE_NAME):
@@ -55,6 +57,7 @@ class TxtRepository(PersistenceStrategy):
             print(f"Erro ao carregar os dados do TXT: {e}")
         return classes
 
+    # Instancia a subclasse correta de Assessment com base no tipo lido do TXT
     def _create_assessment(self, type_str: str, value: float, weight: float):
         t = type_str.lower()
         if t == "exam":
@@ -65,5 +68,6 @@ class TxtRepository(PersistenceStrategy):
             return Seminar(value, weight)
         return Assignment(value, weight)
 
+    # Retorna o nome do formato para uso nos logs e relatórios
     def get_format_name(self) -> str:
         return "TXT"

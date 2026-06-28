@@ -13,6 +13,7 @@ from ..model.seminar import Seminar
 class JsonRepository(PersistenceStrategy):
     FILE_NAME = "academic_data.json"
 
+    # Serializa a lista de turmas para o arquivo JSON com indentação
     def save(self, classes: List[AcademicClass]) -> None:
         try:
             data = [
@@ -31,6 +32,7 @@ class JsonRepository(PersistenceStrategy):
         except Exception as e:
             print(f"Erro ao salvar os dados em JSON: {e}")
 
+    # Lê o arquivo JSON e reconstrói a lista de turmas com suas avaliações
     def load(self) -> List[AcademicClass]:
         if not os.path.exists(self.FILE_NAME):
             return []
@@ -50,6 +52,7 @@ class JsonRepository(PersistenceStrategy):
             print(f"Erro ao carregar os dados do JSON: {e}")
             return []
 
+    # Instancia a subclasse correta de Assessment com base no tipo lido do JSON
     def _create_assessment(self, type_str: str, value: float, weight: float):
         t = type_str.lower().strip()
         if t == "exam":
@@ -60,5 +63,6 @@ class JsonRepository(PersistenceStrategy):
             return Seminar(value, weight)
         return Assignment(value, weight)
 
+    # Retorna o nome do formato para uso nos logs e relatórios
     def get_format_name(self) -> str:
         return "JSON"

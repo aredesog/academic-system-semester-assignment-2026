@@ -12,6 +12,7 @@ class TxtUserRepository(UserRepository):
     def __init__(self):
         self._users: dict[str, User] = self._load_users()
 
+    # Carrega os usuários do arquivo users.txt; usa credenciais padrão se o arquivo não existir
     def _load_users(self) -> dict:
         users = {}
         if not os.path.exists(self.FILE_NAME):
@@ -33,5 +34,6 @@ class TxtUserRepository(UserRepository):
             print(f"Erro ao carregar usuarios: {e}")
         return users
 
+    # Busca e retorna um usuário pelo nome de login, ou None se não encontrado
     def find_by_username(self, username: str) -> Optional[User]:
         return self._users.get(username)

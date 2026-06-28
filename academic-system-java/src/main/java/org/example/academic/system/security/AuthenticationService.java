@@ -15,10 +15,12 @@ public class AuthenticationService {
     private final UserRepository userRepository;
     private final Session session = Session.getInstance();
 
+    // Injeta o repositório de usuários para busca durante a autenticação
     public AuthenticationService(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 
+    // Valida as credenciais do usuário e abre a sessão se corretas; lança exceção se inválidas
     public User authenticate(String username, String password) {
         Optional<User> userOptional = userRepository.findByUsername(username);
 
@@ -33,6 +35,7 @@ public class AuthenticationService {
         return user;
     }
 
+    // Encerra a sessão do usuário autenticado, limpando o estado da sessão
     public void logout() {
         User user = session.getAuthenticatedUser();
         if (user != null) {

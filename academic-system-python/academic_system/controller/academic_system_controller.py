@@ -28,11 +28,13 @@ class AcademicSystemController:
         self._persistence_service = persistence_service
         self._authorization_service = authorization_service
 
+    # Cadastra uma nova turma (somente ADMIN), salvando os dados logo após
     def register_class(self, code: str, title: str) -> None:
         self._authorization_service.authorize(Role.ADMIN)
         self._class_service.register_class(code, title)
         self._persistence_service.save(self._academic_system.get_classes())
 
+    # Cadastra uma avaliação em uma turma (ADMIN ou PROFESSOR), salvando os dados logo após
     def register_assessment(
         self, class_code: str, assessment_type: str, value: float, weight: float
     ) -> None:
@@ -40,27 +42,33 @@ class AcademicSystemController:
         self._assessment_service.register_assessment(class_code, assessment_type, value, weight)
         self._persistence_service.save(self._academic_system.get_classes())
 
+    # Retorna a lista de turmas cadastradas (ADMIN ou PROFESSOR)
     def list_classes(self) -> List[AcademicClass]:
         self._authorization_service.authorize(Role.ADMIN, Role.PROFESSOR)
         return self._academic_system.get_classes()
 
+    # Gera relatório de avaliações agrupadas por turma (ADMIN ou PROFESSOR)
     def generate_class_assessment_summary_report(self) -> str:
         self._authorization_service.authorize(Role.ADMIN, Role.PROFESSOR)
         return self._report_service.generate_class_assessment_summary_report()
 
+    # Gera relatório de validação do peso total das avaliações por turma (ADMIN ou PROFESSOR)
     def generate_assessment_weight_report(self) -> str:
         self._authorization_service.authorize(Role.ADMIN, Role.PROFESSOR)
         return self._report_service.generate_assessment_weight_report()
 
+    # Muda o tipo de persistência ativo e recarrega os dados do novo formato (somente ADMIN)
     def configure_persistence(self, persistence_type: PersistenceType) -> None:
         self._authorization_service.authorize(Role.ADMIN)
         self._persistence_service.configure_persistence_type(persistence_type)
         self._academic_system.replace_classes(self._persistence_service.load())
 
+    # Força o salvamento dos dados acadêmicos no formato atual (somente ADMIN)
     def save_academic_data(self) -> None:
         self._authorization_service.authorize(Role.ADMIN)
         self._persistence_service.save(self._academic_system.get_classes())
 
+    # Gera relatório informando qual tipo de persistência está configurado (somente ADMIN)
     def generate_persistence_configuration_report(self) -> str:
         self._authorization_service.authorize(Role.ADMIN)
         return self._persistence_service.generate_configuration_report()

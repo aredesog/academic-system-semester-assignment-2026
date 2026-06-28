@@ -7,6 +7,7 @@ _VALID_WEIGHT_TOLERANCE = 0.0001
 
 class ReportGenerator:
 
+    # Gera relatório textual listando cada turma com suas avaliações, valor e peso
     @staticmethod
     def class_assessment_summary_report(classes: List[AcademicClass]) -> str:
         lines = ["===== Relatorio de Avaliacoes por Turma ====="]
@@ -30,6 +31,7 @@ class ReportGenerator:
 
         return "\n".join(lines)
 
+    # Gera relatório mostrando o peso total das avaliações de cada turma e se está válido
     @staticmethod
     def assessment_weight_report(classes: List[AcademicClass]) -> str:
         lines = ["===== Relatorio de Peso das Avaliacoes ====="]
@@ -47,6 +49,7 @@ class ReportGenerator:
 
         return "\n".join(lines)
 
+    # Gera relatório informando qual tipo de persistência está ativo no momento
     @staticmethod
     def persistence_configuration_report(format_name: str) -> str:
         return (
@@ -54,6 +57,7 @@ class ReportGenerator:
             f"Tipo de persistencia ativo: {format_name}"
         )
 
+    # Traduz o tipo de avaliação do inglês para o português para exibição no relatório
     @staticmethod
     def _format_type(assessment) -> str:
         type_map = {

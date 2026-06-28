@@ -17,6 +17,7 @@ class ConsoleMenu:
         self._academic_controller = academic_controller
         self._authentication_controller = authentication_controller
 
+    # Inicia o loop principal: autentica o usuário e exibe o menu correspondente ao seu papel
     def start(self) -> None:
         while True:
             user = self._login()
@@ -27,6 +28,7 @@ class ConsoleMenu:
             if should_exit:
                 break
 
+    # Solicita credenciais em loop até que o login seja bem-sucedido
     def _login(self):
         while True:
             print("\n===== Login =====")
@@ -37,6 +39,7 @@ class ConsoleMenu:
             except AuthenticationException as e:
                 print(f"Erro de autenticacao: {e}")
 
+    # Exibe o menu do administrador em loop; retorna True ao sair ou False ao fazer logout
     def _show_admin_menu(self) -> bool:
         while True:
             print("\n===== Menu ADMIN =====")
@@ -84,6 +87,7 @@ class ConsoleMenu:
             except InvalidNumericInputException as e:
                 print(f"Entrada invalida: {e}")
 
+    # Exibe o menu do professor em loop com opções reduzidas; retorna True ao sair ou False ao fazer logout
     def _show_professor_menu(self) -> bool:
         while True:
             print("\n===== Menu PROFESSOR =====")
@@ -118,6 +122,7 @@ class ConsoleMenu:
             except InvalidNumericInputException as e:
                 print(f"Entrada invalida: {e}")
 
+    # Lê código e título do console e solicita o cadastro da turma ao controller
     def _register_class(self) -> None:
         print("\n--- Cadastrar Turma ---")
         code = input("Codigo: ").strip()
@@ -125,6 +130,7 @@ class ConsoleMenu:
         self._academic_controller.register_class(code, title)
         print("Turma cadastrada com sucesso.")
 
+    # Lê os dados da avaliação do console e solicita o cadastro ao controller
     def _register_assessment(self) -> None:
         print("\n--- Cadastrar Avaliacao ---")
         class_code = input("Codigo da turma: ").strip()
@@ -135,6 +141,7 @@ class ConsoleMenu:
         self._academic_controller.register_assessment(class_code, assessment_type, value, weight)
         print("Avaliacao cadastrada com sucesso.")
 
+    # Exibe no console todas as turmas com a quantidade de avaliações de cada uma
     def _list_classes(self) -> None:
         classes = self._academic_controller.list_classes()
         if not classes:
@@ -143,6 +150,7 @@ class ConsoleMenu:
         for c in classes:
             print(f"  {c.code} - {c.title} ({len(c.assessments)} avaliacao(oes))")
 
+    # Apresenta as opções de formato e aplica o tipo de persistência escolhido
     def _configure_persistence(self) -> None:
         print("\n--- Configurar Persistencia ---")
         print("1. TXT  2. JSON  3. XML")
@@ -153,12 +161,14 @@ class ConsoleMenu:
         self._academic_controller.configure_persistence(mapping[option])
         print("Persistencia configurada com sucesso.")
 
+    # Lê um número inteiro do console, lançando exceção se a entrada não for numérica
     def _read_int(self, prompt: str) -> int:
         try:
             return int(input(prompt).strip())
         except ValueError:
             raise InvalidNumericInputException("Digite um numero inteiro.")
 
+    # Lê um número decimal do console, aceitando vírgula como separador
     def _read_float(self, prompt: str) -> float:
         try:
             return float(input(prompt).strip().replace(",", "."))
